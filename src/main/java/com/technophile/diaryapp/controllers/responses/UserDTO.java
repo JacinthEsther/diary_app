@@ -2,16 +2,16 @@ package com.technophile.diaryapp.controllers.responses;
 
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
-@Builder
-public class APIResponse {
-    private UserDTO payLoad;
-    private String message;
-    private boolean isSuccessful;
+@NoArgsConstructor
+public class UserDTO {
+
+    private String id;
+    private String email;
 }

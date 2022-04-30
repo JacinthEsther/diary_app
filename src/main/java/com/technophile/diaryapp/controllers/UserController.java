@@ -3,6 +3,7 @@ package com.technophile.diaryapp.controllers;
 import com.technophile.diaryapp.controllers.requests.CreateAccountRequest;
 import com.technophile.diaryapp.controllers.requests.UpdateAccountRequest;
 import com.technophile.diaryapp.controllers.responses.APIResponse;
+import com.technophile.diaryapp.controllers.responses.UserDTO;
 import com.technophile.diaryapp.exceptions.DiaryApplicationException;
 import com.technophile.diaryapp.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -22,8 +23,9 @@ public class UserController {
     public ResponseEntity<?> createNewUserAccount(@RequestBody CreateAccountRequest accountRequest){
 try {
     APIResponse response = APIResponse.builder()
-            .message("id: " + userService
+            .payLoad(userService
                     .createAccount(accountRequest))
+            .message("account created successfully "  )
             .isSuccessful(true)
             .build();
     return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -38,11 +40,11 @@ catch(DiaryApplicationException ex){
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<?> updateAccount(@RequestBody UpdateAccountRequest updateRequest){
+    public ResponseEntity<?> updateAccount(@RequestBody UpdateAccountRequest updateRequest, String id){
 try {
     APIResponse response = APIResponse.builder()
-            .message("account " + userService
-                    .updateAccount(updateRequest))
+//            .message("account " + userService
+//                    .updateAccount(updateRequest, id))
             .isSuccessful(true)
             .build();
     return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
@@ -76,12 +78,13 @@ catch(DiaryApplicationException ex){
 }
     }
 
-    @GetMapping("/get/{email}")
-    public ResponseEntity<?> getAccount(@PathVariable String email){
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity<?> getAccount(@PathVariable UserDTO id){
 try {
     APIResponse response = APIResponse.builder()
-            .message(userService
-                    .getUserBy(email))
+//            .message(userService
+//                    .getUserBy(id.getEmail(),id.getId()))
             .isSuccessful(true)
             .build();
     return new ResponseEntity<>(response, HttpStatus.FOUND);

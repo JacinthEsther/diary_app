@@ -2,23 +2,34 @@ package com.technophile.diaryapp.services;
 
 import com.technophile.diaryapp.controllers.requests.CreateAccountRequest;
 import com.technophile.diaryapp.controllers.requests.UpdateAccountRequest;
+import com.technophile.diaryapp.controllers.responses.UserDTO;
 import com.technophile.diaryapp.exceptions.DiaryApplicationException;
+import com.technophile.diaryapp.mappers.UserMapper;
+import com.technophile.diaryapp.mappers.UserMapperImpl;
+import com.technophile.diaryapp.models.Diary;
 import com.technophile.diaryapp.models.User;
+import com.technophile.diaryapp.repositories.DiaryRepository;
 import com.technophile.diaryapp.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService{
-//    @Autowired
+    @Autowired
     private UserRepository userRepository;
+    @Autowired
+    DiaryRepository diaryRepository;
+    private UserMapper userMapper = new UserMapperImpl();
+
 
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
     @Override
-    public String createAccount(CreateAccountRequest accountRequestDTO) {
+    public UserDTO createAccount(CreateAccountRequest accountRequestDTO) {
         Optional<User> optionalUser = userRepository.findUserByEmail(accountRequestDTO.getEmail());
         if(optionalUser.isPresent()){
             throw new DiaryApplicationException("User already exist");
@@ -27,25 +38,33 @@ public class UserServiceImpl implements UserService{
         User user = new User();
         user.setEmail(accountRequestDTO.getEmail().toLowerCase());
         user.setPassword(accountRequestDTO.getPassword());
+        user.setDiaries(new HashSet<>());
 //        userRepository.save(user);
       User  savedUser = userRepository.save(user);
-        return savedUser.getId();
+        return userMapper.userToUserDTO(savedUser);
     }
 
     @Override
-    public String updateAccount(UpdateAccountRequest updateAccountRequestDTO) {
-        Optional<User> optionalUser = userRepository.findUserByEmail(updateAccountRequestDTO.getEmail()
-                .toLowerCase());
-        boolean userIsValid = optionalUser.isPresent()&& updateAccountRequestDTO.getOldPassword()
-                .equals(optionalUser.get().getPassword());
-        if(userIsValid){
-            optionalUser.get().setEmail(updateAccountRequestDTO.getEmail());
-            optionalUser.get().setPassword(updateAccountRequestDTO.getNewPassword());
+    public String updateAccount(String id, UpdateAccountRequest updateAccountRequestDTO) {
+        User user = userRepository.findById(id).orElseThrow(()->
+                new DiaryApplicationException("user does not exist"));
 
-            User savedUser = userRepository.save(optionalUser.get());
-            return savedUser.getId();
+        boolean isUpdated= false;
+
+        if(!(updateAccountRequestDTO.getEmail()==null || updateAccountRequestDTO.getEmail().trim().equals(""))) {
+            user.setEmail(updateAccountRequestDTO.getEmail());
+            isUpdated= true;
         }
-        throw new DiaryApplicationException("user does not exist");
+
+        if(!(updateAccountRequestDTO.getPassword()==null || updateAccountRequestDTO.getPassword().trim().equals(""))) {
+            user.setPassword(updateAccountRequestDTO.getPassword());
+            isUpdated=true;
+        }
+
+        if (isUpdated) {
+            userRepository.save(user);
+        }
+        return "user details updated successfully";
     }
 
     @Override
@@ -61,11 +80,34 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public String getUserBy(String email) {
-        Optional <User> optionalUser = userRepository.findUserByEmail(email);
-        if (optionalUser.isPresent()) {
-            return optionalUser.get().getPassword()+" " + " "+ optionalUser.get().getEmail();
-        }
-        throw new DiaryApplicationException("user does not exist");
+    public UserDTO getUserBy(String id) {
+   User user = userRepository.findById(id).orElseThrow(()->
+           new DiaryApplicationException("user does not exist"));
+   return userMapper.userToUserDTO(user);
+    }
+
+    @Override
+    public Diary addNewDiary(String userId, Diary diary) {
+     User user=   userRepository.findById(userId).orElseThrow(()->
+             new DiaryApplicationException("user does not exist"));
+     Diary savedDiary = diaryRepository.save(diary);
+     user.getDiaries().add(savedDiary);
+     userRepository.save(user);
+        return savedDiary;
+    }
+
+    @Override
+    public User findUserByIdInternal(String userId) {
+        return userRepository.findById(userId).orElseThrow(()->
+                new DiaryApplicationException("user does not exist"));
+    }
+
+    @Override
+    public void deleteByEmail(String email) {
+       User user= userRepository.findUserByEmail(email).orElseThrow(()->
+               new DiaryApplicationException("user does not exist"));
+
+       userRepository.delete(user);
+
     }
 }
