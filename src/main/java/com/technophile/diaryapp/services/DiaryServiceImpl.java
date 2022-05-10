@@ -1,7 +1,10 @@
 package com.technophile.diaryapp.services;
 
+import com.technophile.diaryapp.controllers.DiaryDTO;
 import com.technophile.diaryapp.controllers.requests.UpdateDiaryForm;
 import com.technophile.diaryapp.exceptions.DiaryApplicationException;
+import com.technophile.diaryapp.mappers.DiaryMapper;
+import com.technophile.diaryapp.mappers.DiaryMapperImpl;
 import com.technophile.diaryapp.models.Diary;
 import com.technophile.diaryapp.models.Entry;
 import com.technophile.diaryapp.models.User;
@@ -24,6 +27,9 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Autowired
     private DiaryRepository diaryRepository;
+
+    private DiaryMapper diaryMapper = new DiaryMapperImpl();
+
     @Override
     public Diary createDiary(String diaryTitle, String userId) {
         User user = userRepository.findById(userId).
@@ -57,5 +63,13 @@ public class DiaryServiceImpl implements DiaryService {
 
         diary.getEntries().addAll(entries);
         return diaryRepository.save(diary);
+    }
+
+    @Override
+    public DiaryDTO getDiaryBy(String id) {
+        Diary diary = diaryRepository.findById(id).orElseThrow(()->
+                new DiaryApplicationException("diary does not exist"));
+
+        return diaryMapper.diaryToDiaryDTO(diary);
     }
 }

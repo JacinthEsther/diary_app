@@ -90,7 +90,7 @@ public class UserServiceMockTest {
                 .build();
         when(userRepository.findUserByEmail("testemail@gmail.com")).thenReturn(Optional.of(new User()));
         assertThatThrownBy(()->userService.createAccount(accountRequest)).
-                isInstanceOf(DiaryApplicationException.class).hasMessage("user is already present");
+                isInstanceOf(DiaryApplicationException.class).hasMessage("User already exist");
     }
 
     @Test
@@ -112,7 +112,7 @@ public class UserServiceMockTest {
         String expected = userService.updateAccount(id, updateUserDTO);
         verify(userRepository, times(1)).findById(id);
         verify(userRepository, times(1)).save(user);
-        assertThat(expected).isEqualTo("User details updated successfully");
+        assertThat(expected).isEqualTo("user details updated successfully");
     }
 
     @Test
@@ -121,7 +121,7 @@ public class UserServiceMockTest {
         String id = "user id";
         when(userRepository.findById(id)).thenReturn(Optional.empty());
         assertThatThrownBy(()->userService.updateAccount(id,updateUserDTO))
-                .isInstanceOf(DiaryApplicationException.class).hasMessage("user account does not exist");
+                .isInstanceOf(DiaryApplicationException.class).hasMessage("user does not exist");
     }
 
     @Test
