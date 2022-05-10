@@ -25,6 +25,5 @@ public class DiaryServiceTest {
         Diary diary = diaryService.createDiary(title, id);
 
         assertThat(diary.getTitle()).isEqualTo("new diary title");
-        assertThat(diary.getOwner().getId()).isEqualTo("626bc3d81f23d64f8127d3cd");
     }
 }

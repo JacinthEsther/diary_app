@@ -43,7 +43,7 @@ private UserMapper userMapper= new UserMapperImpl();
 
     @Test
     @DisplayName("when you create a user account with an email that already exist in the db, create account service" +
-            "throws diaryexception with the message, user already exist")
+            "throws diaryException with the message, user already exist")
     void testThatThrowsExceptionWhenAUserAlreadyExists(){
         userService.createAccount(createAccount);
         CreateAccountRequest createAccount = CreateAccountRequest.builder().email("test@gmail.com")
@@ -114,7 +114,7 @@ private UserMapper userMapper= new UserMapperImpl();
         User user = userService.findUserByIdInternal(userDTO.getId());
         String diaryTitle = "diary title";
 
-        Diary diary = new Diary(diaryTitle, user);
+        Diary diary = new Diary(diaryTitle);
         Diary savedDiary = userService.addNewDiary(user.getId(), diary);
 
         assertThat(savedDiary.getId()).isNotNull();

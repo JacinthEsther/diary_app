@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class APIResponse {
-    private UserDTO payLoad;
+    private Object payLoad;
     private String message;
     private boolean isSuccessful;
 }

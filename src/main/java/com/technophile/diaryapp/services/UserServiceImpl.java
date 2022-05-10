@@ -20,14 +20,21 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService{
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    DiaryRepository diaryRepository;
+
+   private  DiaryRepository diaryRepository;
     private UserMapper userMapper = new UserMapperImpl();
 
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository,DiaryRepository diaryRepository) {
         this.userRepository = userRepository;
+        this.diaryRepository= diaryRepository;
     }
+
+    public UserServiceImpl() {
+
+    }
+
+
     @Override
     public UserDTO createAccount(CreateAccountRequest accountRequestDTO) {
         Optional<User> optionalUser = userRepository.findUserByEmail(accountRequestDTO.getEmail());
@@ -40,7 +47,7 @@ public class UserServiceImpl implements UserService{
         user.setPassword(accountRequestDTO.getPassword());
         user.setDiaries(new HashSet<>());
 //        userRepository.save(user);
-      User  savedUser = userRepository.save(user);
+      User savedUser = userRepository.save(user);
         return userMapper.userToUserDTO(savedUser);
     }
 
@@ -88,7 +95,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Diary addNewDiary(String userId, Diary diary) {
-     User user=   userRepository.findById(userId).orElseThrow(()->
+     User user= userRepository.findById(userId).orElseThrow(()->
              new DiaryApplicationException("user does not exist"));
      Diary savedDiary = diaryRepository.save(diary);
      user.getDiaries().add(savedDiary);

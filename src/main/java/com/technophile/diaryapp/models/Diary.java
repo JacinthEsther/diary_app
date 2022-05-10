@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,13 +21,29 @@ public class Diary {
     private String id;
     private String title;
     private LocalDateTime creationTime;
-    @DBRef
-    //database reference, diary is related to user
-    private User owner;
+   private Set<Entry> entries;
 
-    public Diary(String title, User owner) {
+    public Diary(String title) {
         this.title = title;
         this.creationTime = LocalDateTime.now();
-        this.owner = owner;
+        this.entries= new HashSet<Entry>();
+
+    }
+
+    public Diary(String id, String title){
+        this.id = id;
+        this.title = title;
+        this.creationTime=LocalDateTime.now();
+        this.entries= new HashSet<Entry>();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Diary{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", title='").append(title).append('\'');
+        sb.append(", creationTime=").append(creationTime);
+        sb.append('}');
+        return sb.toString();
     }
 }
