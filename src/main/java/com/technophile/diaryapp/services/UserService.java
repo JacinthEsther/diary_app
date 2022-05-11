@@ -8,6 +8,7 @@ import com.technophile.diaryapp.models.User;
 
 public interface UserService {
     UserDTO createAccount(CreateAccountRequest accountRequestDTO);
+
     String updateAccount(String id, UpdateAccountRequest updateAccountRequestDTO);
 
     String deleteAccount(String email );
@@ -19,4 +20,6 @@ public interface UserService {
     User findUserByIdInternal(String userId);
 
     void deleteByEmail(String email);
+
+  UserDTO findUserByEmail(String email);
 }

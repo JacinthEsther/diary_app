@@ -72,4 +72,16 @@ public class DiaryServiceImpl implements DiaryService {
 
         return diaryMapper.diaryToDiaryDTO(diary);
     }
+
+    @Override
+    public void deleteDiary(String id) {
+      Diary diary=  diaryRepository.findById(id).orElseThrow(()->new DiaryApplicationException("Diary does not exist"));
+
+        diaryRepository.delete(diary);
+    }
+
+    @Override
+    public Diary findDiary(String id) {
+        return diaryRepository.findById(id).orElse(null);
+    }
 }

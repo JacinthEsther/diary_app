@@ -8,6 +8,7 @@ import com.technophile.diaryapp.mappers.UserMapper;
 import com.technophile.diaryapp.mappers.UserMapperImpl;
 import com.technophile.diaryapp.models.Diary;
 import com.technophile.diaryapp.models.User;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -18,10 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
+@Slf4j
 @ImportAutoConfiguration(exclude = EmbeddedMongoAutoConfiguration.class)
 class UserServiceImplTest {
 @Autowired
     private UserService userService;
+    @Autowired
+    DiaryService diaryService;
 
 private UserMapper userMapper= new UserMapperImpl();
 
@@ -121,11 +125,27 @@ private UserMapper userMapper= new UserMapperImpl();
         assertThat(savedDiary.getTitle()).isEqualTo("diary title");
     }
 
-    @AfterEach
-    void tearDown() {
-        userService.deleteByEmail("test@gmail.com");
+    @Test
+    void testThatCanDeleteAUserAndItsDiaries(){
+        UserDTO userDTO = userService.createAccount(createAccount);
+        Diary diary = diaryService.createDiary("new diary", userDTO.getId());
+        userService.addNewDiary(userDTO.getId(), diary);
+        userService.deleteByEmail(userDTO.getEmail());
+        assertThatThrownBy(()->userService.getUserBy(userDTO.getId())).isInstanceOf(DiaryApplicationException.class)
+                .hasMessage("user does not exist");
+        log.info("Diary id --> {}", diary.getId());
+        Diary foundDiary = diaryService.findDiary(diary.getId());
+        assertThat(foundDiary).isNull();
     }
 
+    @AfterEach
+    void tearDown() {
+        if (userService.findUserByEmail("test@gmail.com") != null){
+
+            userService.deleteByEmail("test@gmail.com");
+//            log.info("after each");
+        }
+    }
     //    @Disabled
 //    @Test
 //    void testGetUserByEmail(){

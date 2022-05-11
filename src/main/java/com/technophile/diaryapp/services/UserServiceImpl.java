@@ -10,6 +10,7 @@ import com.technophile.diaryapp.models.Diary;
 import com.technophile.diaryapp.models.User;
 import com.technophile.diaryapp.repositories.DiaryRepository;
 import com.technophile.diaryapp.repositories.UserRepository;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,23 +18,19 @@ import java.util.HashSet;
 import java.util.Optional;
 
 @Service
+@NoArgsConstructor
 public class UserServiceImpl implements UserService{
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
    private  DiaryRepository diaryRepository;
     private UserMapper userMapper = new UserMapperImpl();
 
-
-    public UserServiceImpl(UserRepository userRepository,DiaryRepository diaryRepository) {
-        this.userRepository = userRepository;
-        this.diaryRepository= diaryRepository;
-    }
-
-    public UserServiceImpl() {
-
-    }
-
+//    public UserServiceImpl(UserRepository userRepository, DiaryRepository diaryRepository) {
+//        this.userRepository = userRepository;
+//        this.diaryRepository = diaryRepository;
+//    }
 
     @Override
     public UserDTO createAccount(CreateAccountRequest accountRequestDTO) {
@@ -113,8 +110,14 @@ public class UserServiceImpl implements UserService{
     public void deleteByEmail(String email) {
        User user= userRepository.findUserByEmail(email).orElseThrow(()->
                new DiaryApplicationException("user does not exist"));
-
+        diaryRepository.deleteAll(user.getDiaries());
        userRepository.delete(user);
 
     }
-}
+
+    @Override
+    public UserDTO findUserByEmail(String email) {
+        Optional<User> optionalUser = userRepository.findUserByEmail(email);
+        return optionalUser.map(user -> userMapper.userToUserDTO(user)).orElse(null);
+    }
+    }

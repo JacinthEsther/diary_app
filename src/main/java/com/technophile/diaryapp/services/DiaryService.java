@@ -16,4 +16,8 @@ public interface DiaryService {
     Diary addEntries(List<Entry> entries, String diaryId);
 
     DiaryDTO getDiaryBy(String id);
+
+    void deleteDiary(String id);
+
+    Diary findDiary(String id);
 }
