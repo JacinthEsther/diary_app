@@ -48,74 +48,74 @@ private UserMapper userMapper= new UserMapperImpl();
     @Test
     @DisplayName("when you create a user account with an email that already exist in the db, create account service" +
             "throws diaryException with the message, user already exist")
-    void testThatThrowsExceptionWhenAUserAlreadyExists(){
-        userService.createAccount(createAccount);
-        CreateAccountRequest createAccount = CreateAccountRequest.builder().email("test@gmail.com")
-                .password("password").build();
+                void testThatThrowsExceptionWhenAUserAlreadyExists(){
+                    userService.createAccount(createAccount);
+                    CreateAccountRequest createAccount = CreateAccountRequest.builder().email("test@gmail.com")
+                            .password("password").build();
 
-        assertThatThrownBy(()->userService.createAccount(createAccount)).isInstanceOf
-                (DiaryApplicationException.class).hasMessage("User already exist");
-    }
-
-
-
-    @Test
-
-    void testThatThrowsExceptionWhenUserIdIsNotFound(){
-        userService.createAccount(createAccount);
-      String id = "null id";
-        UpdateAccountRequest updateDTO = UpdateAccountRequest.builder()
-                .password("new password")
-                .email("newtest@gmail.com").build();
-
-        assertThatThrownBy(()->userService.updateAccount(id, updateDTO)).isInstanceOf
-                (DiaryApplicationException.class).hasMessage("user does not exist");
-    }
-
-    @Test
-    void testThatCanUpdateUserInformation(){
-       UserDTO userDTO= userService.createAccount(createAccount);
-       UpdateAccountRequest updateRequest= new UpdateAccountRequest("", "newest password");
-
-       String result = userService.updateAccount(userDTO.getId(), updateRequest);
-       assertThat(result).isEqualTo("user details updated successfully");
-       UserDTO userFromDatabase = userService.getUserBy(userDTO.getId());
-       assertThat(userFromDatabase.getEmail()).isEqualTo("test@gmail.com");
-
-    }
-//
-//    @Disabled
-//    void testDeleteAccount(){
-//
-//
-////        String id= userService.createAccount(createAccount);
-////        assertThat(id).isNotNull();
-//
-//
-////       userService.deleteAccount("test@gmail.com");
-//
-////        assertThat();
-//
-//    }
-
-    @Test
-    void testThatCanGetUserInformation(){
-        UserDTO userDTOFromDataBase= userService.createAccount(createAccount);
-
-   UserDTO userDTO = userService.getUserBy(userDTOFromDataBase.getId());
-   assertThat(userDTO.getId()).isEqualTo(userDTOFromDataBase.getId());
-    }
+                    assertThatThrownBy(()->userService.createAccount(createAccount)).isInstanceOf
+                            (DiaryApplicationException.class).hasMessage("User already exist");
+                }
 
 
 
-    @Test
-    void testThatCanAddDiaryToUser(){
+                @Test
+
+                void testThatThrowsExceptionWhenUserIdIsNotFound(){
+                    userService.createAccount(createAccount);
+                  String id = "null id";
+                    UpdateAccountRequest updateDTO = UpdateAccountRequest.builder()
+                            .password("new password")
+                            .email("newtest@gmail.com").build();
+
+                    assertThatThrownBy(()->userService.updateAccount(id, updateDTO)).isInstanceOf
+                            (DiaryApplicationException.class).hasMessage("user does not exist");
+                }
+
+                @Test
+                void testThatCanUpdateUserInformation(){
+                   UserDTO userDTO= userService.createAccount(createAccount);
+                   UpdateAccountRequest updateRequest= new UpdateAccountRequest("", "newest password");
+
+                   String result = userService.updateAccount(userDTO.getId(), updateRequest);
+                   assertThat(result).isEqualTo("user details updated successfully");
+                   UserDTO userFromDatabase = userService.getUserBy(userDTO.getId());
+                   assertThat(userFromDatabase.getEmail()).isEqualTo("test@gmail.com");
+
+                }
+            //
+            //    @Disabled
+            //    void testDeleteAccount(){
+            //
+            //
+            ////        String id= userService.createAccount(createAccount);
+            ////        assertThat(id).isNotNull();
+            //
+            //
+            ////       userService.deleteAccount("test@gmail.com");
+            //
+            ////        assertThat();
+            //
+            //    }
+
+                @Test
+                void testThatCanGetUserInformation(){
+                    UserDTO userDTOFromDataBase= userService.createAccount(createAccount);
+
+               UserDTO userDTO = userService.getUserBy(userDTOFromDataBase.getId());
+               assertThat(userDTO.getId()).isEqualTo(userDTOFromDataBase.getId());
+                }
 
 
-        UserDTO userDTO=  userService.createAccount(createAccount);
-//        UserDTO userDTO=userService.getUserBy(userId);
-//        User user = userMapper.userDTOToUser(userDTO);
-        User user = userService.findUserByIdInternal(userDTO.getId());
+
+                @Test
+                void testThatCanAddDiaryToUser(){
+
+
+                    UserDTO userDTO=  userService.createAccount(createAccount);
+            //        UserDTO userDTO=userService.getUserBy(userId);
+            //        User user = userMapper.userDTOToUser(userDTO);
+                    User user = userService.findUserByIdInternal(userDTO.getId());
         String diaryTitle = "diary title";
 
         Diary diary = new Diary(diaryTitle);
